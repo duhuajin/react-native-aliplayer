@@ -103,6 +103,7 @@ const Player = forwardRef(
       if (currentAppState === 'background') {
         playerRef.current.pausePlay();
         setIsPlaying(false);
+        onPause && onPause();
       }
     }, [currentAppState]);
 
