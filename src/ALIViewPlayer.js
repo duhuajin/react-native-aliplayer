@@ -1,5 +1,9 @@
 import React, { PureComponent } from 'react';
-import { UIManager, findNodeHandle, requireNativeComponent } from 'react-native';
+import {
+  UIManager,
+  findNodeHandle,
+  requireNativeComponent,
+} from 'react-native';
 import PropTypes from 'prop-types';
 
 export default class ALIViewPlayer extends PureComponent {
@@ -8,17 +12,21 @@ export default class ALIViewPlayer extends PureComponent {
     this.destroyPlay();
   }
 
-  _assignRoot = (component) => {
+  _assignRoot = component => {
     this._root = component;
   };
 
   _dispatchCommand = (command, params = []) => {
     if (this._root) {
-      UIManager.dispatchViewManagerCommand(findNodeHandle(this._root), command, params);
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(this._root),
+        command,
+        params,
+      );
     }
   };
 
-  setNativeProps = (props) => {
+  setNativeProps = props => {
     if (this._root) {
       this._root.setNativeProps(props);
     }

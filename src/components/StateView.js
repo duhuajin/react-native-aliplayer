@@ -1,8 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ActivityIndicator,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 import { Button } from 'react-native-elements';
 
-import ControlIcon from './ControlIcon';
+// import ControlIcon from './ControlIcon';
 
 const styles = StyleSheet.create({
   stateViewLoading: {
@@ -58,7 +66,10 @@ function StateView({
   if (!isPlaying) {
     view = (
       <View>
-        <ControlIcon onPress={onPressPlay} size={40} name="playcircleo" />
+        {/* <TouchableOpacity onPress={onPressPlay}>
+          <Image source={require('../assets/img/play.png')} />
+        </TouchableOpacity> */}
+        {/* <ControlIcon onPress={onPressPlay} size={40} name="playcircleo" /> */}
       </View>
     );
   }
@@ -68,8 +79,7 @@ function StateView({
         <Text
           style={styles.textError}
           numberOfLines={1}
-          ellipsizeMode="tail"
-        >{`播放出错:${message}`}</Text>
+          ellipsizeMode="tail">{`播放出错:${message}`}</Text>
         <Button
           title="重试"
           titleStyle={{ fontSize: 12 }}

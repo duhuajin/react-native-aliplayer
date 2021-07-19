@@ -1,8 +1,19 @@
-import React, { forwardRef, useRef, useState, useEffect, useImperativeHandle } from 'react';
+// @ts-nocheck
+
+import React, {
+  forwardRef,
+  useRef,
+  useState,
+  useEffect,
+  useImperativeHandle,
+} from 'react';
 import { StyleSheet, StatusBar, Image, View } from 'react-native';
 import PropTypes from 'prop-types';
-import { useBackHandler, useAppState, useDimensions } from '@react-native-community/hooks';
-import { hideNavigationBar, showNavigationBar } from 'react-native-navigation-bar-color';
+import { useAppState, useDimensions } from '@react-native-community/hooks';
+import {
+  hideNavigationBar,
+  showNavigationBar,
+} from 'react-native-navigation-bar-color';
 
 import ALIViewPlayer from './ALIViewPlayer';
 import ControlerView from './components/ControlerView';
@@ -29,16 +40,18 @@ const Player = forwardRef(
       onProgress,
       onPrepare,
       isLandscape,
+      enableSeek,
+      onPause,
+      onPlay,
       ...restProps
     },
-    ref
+    ref,
   ) => {
     const playerRef = useRef();
     const [playSource, setPlaySource] = useState(source);
     const [error, setError] = useState(false);
     const [errorObj, setErrorObj] = useState({});
     const [loading, setLoading] = useState(true);
-    const [isFull, setIsFull] = useState(false);
     const [isComplate, setIsComplate] = useState(false);
     const [isStopPlay, setIsStopPlay] = useState(false);
     const [isPlaying, setIsPlaying] = useState(setAutoPlay);
@@ -53,14 +66,14 @@ const Player = forwardRef(
     const currentAppState = useAppState();
 
     useImperativeHandle(ref, () => ({
-      play: (play) => {
+      play: play => {
         if (play) {
           handlePlay();
         } else {
           handlePause();
         }
       },
-      fullscreen: (full) => {
+      fullscreen: full => {
         if (full) {
           handleFullScreenIn();
         } else {
@@ -70,6 +83,14 @@ const Player = forwardRef(
       stop: handleStop,
       seekTo: handleSlide,
     }));
+
+    useEffect(() => {
+      if (isLandscape) {
+        hideNavigationBar();
+      } else {
+        showNavigationBar();
+      }
+    }, [isLandscape]);
 
     // 处理切换资源
     useEffect(() => {
@@ -85,15 +106,15 @@ const Player = forwardRef(
       }
     }, [currentAppState]);
 
-    useBackHandler(() => {
-      if (isFull) {
-        handleFullScreenOut();
-        return true;
-      }
-      return false;
-    });
+    // useBackHandler(() => {
+    //   if (isOrientationLandscape) {
+    //     handleFullScreenOut();
+    //     return true;
+    //   }
+    //   return false;
+    // });
 
-    const changeSource = (src) => {
+    const changeSource = src => {
       setPlaySource(src);
       setLoading(true);
       setLoadingObj({});
@@ -110,11 +131,13 @@ const Player = forwardRef(
         playerRef.current.startPlay();
       }
       setIsPlaying(true);
+      onPlay && onPlay();
     };
 
     const handlePause = () => {
       playerRef.current.pausePlay();
       setIsPlaying(false);
+      onPause && onPause();
     };
 
     const handleReload = () => {
@@ -122,7 +145,7 @@ const Player = forwardRef(
       playerRef.current.reloadPlay();
     };
 
-    const handleSlide = (value) => {
+    const handleSlide = value => {
       playerRef.current.seekTo(value);
     };
 
@@ -134,22 +157,18 @@ const Player = forwardRef(
     };
 
     const handleFullScreenIn = () => {
-      setIsFull(true);
       onFullScreen(true);
-      hideNavigationBar();
     };
 
     const handleFullScreenOut = () => {
       onFullScreen(false);
-      setIsFull(false);
-      showNavigationBar();
     };
 
-    const handleChangeConfig = (config) => {
+    const handleChangeConfig = config => {
       playerRef.current.setNativeProps(config);
     };
 
-    const handleChangeBitrate = (newIndex) => {
+    const handleChangeBitrate = newIndex => {
       setBitrateIndex(newIndex);
     };
 
@@ -181,14 +200,17 @@ const Player = forwardRef(
     };
 
     return (
-      <View style={[styles.base, isFull ? fullscreenStyle : style]}>
+      <View
+        style={[styles.base, isOrientationLandscape ? fullscreenStyle : style]}>
         <ALIViewPlayer
           {...restProps}
           ref={playerRef}
           source={playSource}
           setAutoPlay={setAutoPlay}
           selectBitrateIndex={bitrateIndex}
-          style={isFull ? fullwindowStyle : StyleSheet.absoluteFill}
+          style={
+            isOrientationLandscape ? fullwindowStyle : StyleSheet.absoluteFill
+          }
           onAliPrepared={({ nativeEvent }) => {
             setTotal(nativeEvent.duration);
             if (isPlaying) {
@@ -238,13 +260,12 @@ const Player = forwardRef(
           }}
           onAliBitrateReady={({ nativeEvent }) => {
             setBitrateList(nativeEvent.bitrates);
-          }}
-        >
-          <StatusBar hidden={isFull} />
+          }}>
+          <StatusBar hidden={isLandscape} />
           <ControlerView
             {...restProps}
             title={title}
-            isFull={isFull}
+            isFull={isOrientationLandscape}
             current={current}
             buffer={buffer}
             total={total}
@@ -267,11 +288,12 @@ const Player = forwardRef(
             onPressFullOut={handleFullScreenOut}
             onChangeConfig={handleChangeConfig}
             onChangeBitrate={handleChangeBitrate}
+            enableSeek={enableSeek}
           />
         </ALIViewPlayer>
       </View>
     );
-  }
+  },
 );
 Player.propTypes = {
   ...ALIViewPlayer.propTypes,
@@ -287,6 +309,7 @@ Player.propTypes = {
   onProgress: PropTypes.func, // 进度回调
   onPrepare: PropTypes.func, // 播放准备回调
   isLandscape: PropTypes.bool, // 全屏是否横屏
+  enableSeek: PropTypes.bool,
 };
 
 Player.defaultProps = {
@@ -296,6 +319,8 @@ Player.defaultProps = {
   onChangeBitrate: () => {},
   onProgress: () => {},
   onPrepare: () => {},
+  onPause: () => {},
+  onPlay: () => {},
   themeColor: '#F85959',
   enableHardwareDecoder: false,
   setSpeed: 1.0,

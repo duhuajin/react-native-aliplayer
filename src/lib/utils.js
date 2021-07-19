@@ -1,4 +1,4 @@
-export const formatTime = (time) => {
+export const formatTime = time => {
   const s = parseInt(time % 60) || 0;
   const m = parseInt(time / 60) || 0;
   const S = s > 9 ? String(s) : '0' + s;
@@ -6,7 +6,7 @@ export const formatTime = (time) => {
   return { M, S };
 };
 
-export const getBitrateLabel = (bitrate) => {
+export const getBitrateLabel = bitrate => {
   if (!bitrate) {
     return '';
   }

@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
-import { Text, View, SafeAreaView, StyleSheet, Switch } from 'react-native';
+import {
+  Text,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
 import ChooseList from './ChooseList';
-import ControlIcon from './ControlIcon';
+// import ControlIcon from './ControlIcon';
 
 const styles = StyleSheet.create({
   config: {
@@ -40,7 +48,7 @@ function CusSwitch({ themeColor, defaultValue, onChange }) {
         true: themeColor,
         false: 'white',
       }}
-      onValueChange={(value) => {
+      onValueChange={value => {
         setVisible(value);
         onChange(value);
       }}
@@ -76,7 +84,7 @@ function ConfigView({ visible, config, themeColor, onChange, onClose }) {
             <CusSwitch
               themeColor={themeColor}
               defaultValue={setLoop}
-              onChange={(value) => {
+              onChange={value => {
                 onChange({ setLoop: value });
               }}
             />
@@ -86,7 +94,7 @@ function ConfigView({ visible, config, themeColor, onChange, onClose }) {
             <CusSwitch
               themeColor={themeColor}
               defaultValue={setMute}
-              onChange={(value) => {
+              onChange={value => {
                 onChange({ setMute: value });
               }}
             />
@@ -114,7 +122,10 @@ function ConfigView({ visible, config, themeColor, onChange, onClose }) {
             />
           </View>
           <View style={styles.close}>
-            <ControlIcon name="closecircleo" onPress={onClose} />
+            {/* <ControlIcon name="closecircleo" onPress={onClose} /> */}
+            <TouchableOpacity onPress={onClose}>
+              <Image source={require('../assets/img/back.png')} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>

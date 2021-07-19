@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 function ChooseList({ data = [], themeColor, defaultValue, onChange }) {
   const [value, setValue] = useState(defaultValue);
 
-  const renderItem = (item) => {
+  const renderItem = item => {
     const isSelect = item.value === value;
     const selectStyle = {
       color: themeColor,
@@ -25,7 +25,10 @@ function ChooseList({ data = [], themeColor, defaultValue, onChange }) {
       }
     };
     return (
-      <Text key={item.value} style={[styles.text, isSelect && selectStyle]} onPress={handlePress}>
+      <Text
+        key={item.value}
+        style={[styles.text, isSelect && selectStyle]}
+        onPress={handlePress}>
         {item.label}
       </Text>
     );

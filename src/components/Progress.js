@@ -20,7 +20,12 @@ function Progress({ disable, value, maxValue, themeColor }) {
   const progress = `${maxValue ? Math.floor((value * 100) / maxValue) : 0}%`;
   return (
     <View style={styles.progressView}>
-      <View style={[styles.progressValue, { width: progress, backgroundColor: themeColor }]}></View>
+      <View
+        style={[
+          styles.progressValue,
+          { width: progress, backgroundColor: themeColor },
+        ]}
+      />
     </View>
   );
 }

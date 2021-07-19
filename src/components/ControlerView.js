@@ -1,16 +1,22 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import { Text, Animated, Easing, SafeAreaView, StyleSheet, Image } from 'react-native';
+import {
+  Text,
+  Animated,
+  Easing,
+  SafeAreaView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Slider from './Slide';
 
 import { formatTime, getBitrateLabel } from '../lib/utils';
 import useTimeout from '../lib/useTimeout';
 import PressView from './PressView';
-import ControlIcon from './ControlIcon';
 import StateView from './StateView';
 import Progress from './Progress';
 import ConfigView from './ConfigView';
-import QualityView from './QualityView';
+import Seekbar from './Seekbar';
 
 const GradientWhite = 'rgba(0,0,0,0)';
 const GradientBlack = 'rgba(0,0,0,0.3)';
@@ -39,7 +45,7 @@ const styles = StyleSheet.create({
   },
   textTime: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 12,
   },
   iconLeft: {
     marginLeft: 20,
@@ -62,6 +68,24 @@ const styles = StyleSheet.create({
   bottomSlide: {
     flex: 0.8,
     marginHorizontal: 5,
+  },
+  play: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  full: {
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  back: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -99,6 +123,7 @@ function ControlerView({
   onChangeBitrate,
   onSlide,
   onCastClick,
+  enableSeek,
 }) {
   const [visible, setVisible] = useState(false);
   const [configVisible, setConfigVisible] = useState(false);
@@ -106,7 +131,8 @@ function ControlerView({
   const currentFormat = formatTime(current);
   const totalFormat = formatTime(total);
   const hasBitrate = Array.isArray(bitrateList) && bitrateList.length;
-  const bitrate = bitrateList && bitrateList.find((o) => o.index === bitrateIndex);
+  const bitrate =
+    bitrateList && bitrateList.find(o => o.index === bitrateIndex);
   const [configObj, setConfigObj] = useState({
     setSpeed,
     setScaleMode,
@@ -115,27 +141,28 @@ function ControlerView({
   });
   const bitrateLabel = getBitrateLabel(bitrate) || '画质';
 
-  const { animateValue, bottomAnimate, headerAnimate, opacityAnimate } = useMemo(() => {
-    const animateValue = new Animated.Value(0);
-    const bottomAnimate = animateValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [controlerHeight, 0],
-    });
-    const headerAnimate = animateValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [-controlerHeight, 0],
-    });
-    const opacityAnimate = animateValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    });
-    return {
-      animateValue,
-      bottomAnimate,
-      headerAnimate,
-      opacityAnimate,
-    };
-  }, []);
+  const { animateValue, bottomAnimate, headerAnimate, opacityAnimate } =
+    useMemo(() => {
+      const animateValue = new Animated.Value(0);
+      const bottomAnimate = animateValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [controlerHeight, 0],
+      });
+      const headerAnimate = animateValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-controlerHeight, 0],
+      });
+      const opacityAnimate = animateValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      });
+      return {
+        animateValue,
+        bottomAnimate,
+        headerAnimate,
+        opacityAnimate,
+      };
+    }, []);
 
   const [_, clear, set] = useTimeout(() => {
     setVisible(false);
@@ -162,40 +189,45 @@ function ControlerView({
 
   return (
     <SafeAreaView style={styles.controler}>
-      {!isStart && <Image source={poster} resizeMode="cover" style={StyleSheet.absoluteFill} />}
+      {!isStart && (
+        <Image
+          source={poster}
+          resizeMode="cover"
+          style={StyleSheet.absoluteFill}
+        />
+      )}
       <AnimateView
         style={[
           styles.header,
-          { opacity: opacityAnimate, transform: [{ translateY: headerAnimate }] },
-        ]}
-      >
-        <LinearGradient style={StyleSheet.absoluteFill} colors={[GradientBlack, GradientWhite]} />
-        {isFull && <ControlIcon onPress={onPressFullOut} name="left" />}
+          {
+            opacity: opacityAnimate,
+            transform: [{ translateY: headerAnimate }],
+          },
+        ]}>
+        <LinearGradient
+          style={StyleSheet.absoluteFill}
+          colors={[GradientBlack, GradientWhite]}
+        />
+
+        {isFull && (
+          <TouchableOpacity style={styles.back} onPress={onPressFullOut}>
+            <Image source={require('../assets/img/back.png')} />
+          </TouchableOpacity>
+        )}
+
         <Text style={styles.textTitle}>{title}</Text>
         {Boolean(hasBitrate && isFull) && (
           <Text
             style={[styles.textQuality, styles.iconLeft]}
-            onPress={() => setQualityVisible(true)}
-          >
+            onPress={() => setQualityVisible(true)}>
             {bitrateLabel}
           </Text>
         )}
-        {enableCast && (
-          <ControlIcon
-            iconStyle={styles.iconLeft}
-            name="iconfontdesktop"
-            onPress={() => onCastClick({ current, playSource })}
-          />
-        )}
-        {isFull && (
-          <ControlIcon
-            iconStyle={styles.iconLeft}
-            name="setting"
-            onPress={() => setConfigVisible(true)}
-          />
-        )}
       </AnimateView>
-      <PressView style={styles.stateview} onPress={handlePressPlayer} activeOpacity={1}>
+      <PressView
+        style={styles.stateview}
+        onPress={handlePressPlayer}
+        activeOpacity={1}>
         <StateView
           isError={isError}
           isLoading={isLoading}
@@ -210,58 +242,91 @@ function ControlerView({
       <AnimateView
         style={[
           styles.bottom,
-          { opacity: opacityAnimate, transform: [{ translateY: bottomAnimate }] },
-        ]}
-      >
-        <LinearGradient style={StyleSheet.absoluteFill} colors={[GradientWhite, GradientBlack]} />
-        <ControlIcon
-          onPress={isPlaying ? onPressPause : onPressPlay}
-          name={isPlaying ? 'pausecircleo' : 'playcircleo'}
+          {
+            opacity: opacityAnimate,
+            transform: [{ translateY: bottomAnimate }],
+          },
+        ]}>
+        <LinearGradient
+          style={StyleSheet.absoluteFill}
+          colors={[GradientWhite, GradientBlack]}
         />
-        <Text style={styles.textTime}>{`${currentFormat.M}:${currentFormat.S}`}</Text>
-        <Slider
+
+        <TouchableOpacity
+          style={styles.play}
+          onPress={isPlaying ? onPressPause : onPressPlay}>
+          <Image
+            resizeMode="contain"
+            source={
+              isPlaying
+                ? require('../assets/img/pause.png')
+                : require('../assets/img/play.png')
+            }
+          />
+        </TouchableOpacity>
+        <Text
+          style={
+            styles.textTime
+          }>{`${currentFormat.M}:${currentFormat.S}`}</Text>
+        <Seekbar
           progress={current}
           min={0}
           max={total}
-          cache={buffer}
           style={styles.bottomSlide}
-          onSlidingComplete={(value) => {
-            onSlide(parseInt(value));
+          progressColor={themeColor}
+          onProgressChanged={value => {
+            if (enableSeek === false) {
+              return;
+            }
+            onSlide(value);
           }}
           themeColor={themeColor}
         />
-        <Text style={styles.textTime}>{`${totalFormat.M}:${totalFormat.S}`}</Text>
+        <Text
+          style={styles.textTime}>{`${totalFormat.M}:${totalFormat.S}`}</Text>
         {enableFullScreen && (
-          <ControlIcon
-            onPress={isFull ? onPressFullOut : onPressFullIn}
-            name={isFull ? 'shrink' : 'arrowsalt'}
-          />
+          <TouchableOpacity
+            style={styles.full}
+            onPress={isFull ? onPressFullOut : onPressFullIn}>
+            <Image
+              source={
+                isFull
+                  ? require('../assets/img/shrink.png')
+                  : require('../assets/img/expand.png')
+              }
+            />
+          </TouchableOpacity>
         )}
       </AnimateView>
-      <Progress disable={visible} value={current} maxValue={total} themeColor={themeColor} />
+      <Progress
+        disable={visible}
+        value={current}
+        maxValue={total}
+        themeColor={themeColor}
+      />
       <ConfigView
         config={configObj}
         visible={configVisible}
         themeColor={themeColor}
         onClose={() => setConfigVisible(false)}
-        onChange={(res) => {
+        onChange={res => {
           const newConfig = Object.assign({}, configObj, res);
           setConfigObj(newConfig);
           onChangeConfig(newConfig);
         }}
       />
-      <QualityView
+      {/* <QualityView
         themeColor={themeColor}
         playSource={playSource}
         visible={qualityVisible}
         bitrateList={bitrateList}
         bitrateIndex={bitrateIndex}
-        onChange={(res) => {
+        onChange={res => {
           onChangeBitrate(res.value);
           setQualityVisible(false);
         }}
         onClose={() => setQualityVisible(false)}
-      />
+      /> */}
     </SafeAreaView>
   );
 }

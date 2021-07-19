@@ -1,8 +1,15 @@
 import React from 'react';
-import { Text, View, SafeAreaView, StyleSheet } from 'react-native';
+import {
+  Text,
+  View,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
 
 import ChooseList from './ChooseList';
-import ControlIcon from './ControlIcon';
+// import ControlIcon from './ControlIcon';
 import { getBitrateLabel } from '../lib/utils';
 
 const styles = StyleSheet.create({
@@ -30,12 +37,19 @@ const styles = StyleSheet.create({
   },
 });
 
-function QualityView({ visible, bitrateList, bitrateIndex, themeColor, onClose, onChange }) {
+function QualityView({
+  visible,
+  bitrateList,
+  bitrateIndex,
+  themeColor,
+  onClose,
+  onChange,
+}) {
   if (!visible) {
     return null;
   }
 
-  const chooseData = bitrateList.map((o) => {
+  const chooseData = bitrateList.map(o => {
     return { value: o.index, label: getBitrateLabel(o) };
   });
 
@@ -54,7 +68,10 @@ function QualityView({ visible, bitrateList, bitrateIndex, themeColor, onClose, 
           />
         </View>
         <View style={styles.close}>
-          <ControlIcon name="closecircleo" onPress={onClose} />
+          <TouchableOpacity onPress={onClose}>
+            <Image source={require('../assets/img/back.png')} />
+          </TouchableOpacity>
+          {/* <ControlIcon name="closecircleo" onPress={onClose} /> */}
         </View>
       </View>
     </SafeAreaView>
