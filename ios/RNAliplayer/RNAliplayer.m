@@ -35,7 +35,7 @@
   [self.player reload];
 }
 -(void)restartPlay{
-  [self.player seekToTime:0 seekMode:AVP_SEEKMODE_INACCURATE];
+  [self.player seekToTime:0 seekMode:AVP_SEEKMODE_ACCURATE];
   [self.player start];
 }
 -(void)destroyPlay{
