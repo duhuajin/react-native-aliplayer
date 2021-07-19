@@ -45,7 +45,7 @@
   });
 }
 - (void)seekTo:(int)position{
-  [self.player seekToTime:position*1000 seekMode:AVP_SEEKMODE_INACCURATE];
+  [self.player seekToTime:position*1000 seekMode:AVP_SEEKMODE_ACCURATE];
 }
 
 //定义要暴露属性
