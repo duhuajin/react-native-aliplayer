@@ -123,7 +123,7 @@ function ControlerView({
   onChangeBitrate,
   onSlide,
   onCastClick,
-  enableSeek,
+  enableSeekForword,
 }) {
   const [visible, setVisible] = useState(false);
   const [configVisible, setConfigVisible] = useState(false);
@@ -275,7 +275,11 @@ function ControlerView({
           style={styles.bottomSlide}
           progressColor={themeColor}
           onProgressChanged={value => {
-            if (enableSeek === false) {
+            if (enableSeekForword === true) {
+              onSlide(value);
+              return;
+            }
+            if (value > current) {
               return;
             }
             onSlide(value);

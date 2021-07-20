@@ -40,7 +40,7 @@ const Player = forwardRef(
       onProgress,
       onPrepare,
       isLandscape,
-      enableSeek,
+      enableSeekForword = true,
       onPause,
       onPlay,
       ...restProps
@@ -289,7 +289,7 @@ const Player = forwardRef(
             onPressFullOut={handleFullScreenOut}
             onChangeConfig={handleChangeConfig}
             onChangeBitrate={handleChangeBitrate}
-            enableSeek={enableSeek}
+            enableSeekForword={enableSeekForword}
           />
         </ALIViewPlayer>
       </View>
@@ -314,14 +314,14 @@ Player.propTypes = {
 };
 
 Player.defaultProps = {
-  onFullScreen: () => {},
-  onCompletion: () => {},
-  onCastClick: () => {},
-  onChangeBitrate: () => {},
-  onProgress: () => {},
-  onPrepare: () => {},
-  onPause: () => {},
-  onPlay: () => {},
+  onFullScreen: () => { },
+  onCompletion: () => { },
+  onCastClick: () => { },
+  onChangeBitrate: () => { },
+  onProgress: () => { },
+  onPrepare: () => { },
+  onPause: () => { },
+  onPlay: () => { },
   themeColor: '#F85959',
   enableHardwareDecoder: false,
   setSpeed: 1.0,
