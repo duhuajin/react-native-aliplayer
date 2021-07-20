@@ -71,7 +71,6 @@ export default class SeekBar extends Component {
         style={[this.styles.container, this.props.style]}
         onLayout={e => {
           this.containerLeft = e.nativeEvent.layout.x;
-          console.log('获取容器位置：' + this.containerLeft);
           this.setProgress(this.state.value);
         }}
         onStartShouldSetResponder={() => this.props.thumbSize > 0}
@@ -84,12 +83,7 @@ export default class SeekBar extends Component {
           onLayout={e => {
             this.progressLeft = e.nativeEvent.layout.x;
             this.progressRight = this.progressLeft + e.nativeEvent.layout.width;
-            console.log(
-              '获取进度条位置：' +
-                this.progressLeft +
-                ', ' +
-                this.progressRight,
-            );
+       
           }}>
           <View
             style={[
@@ -131,18 +125,11 @@ export default class SeekBar extends Component {
       nextProps.progress !== undefined &&
       nextProps.progress !== this.props.progress
     ) {
-      //console.log("nextProps.progress changed:" + nextProps.progress);
       this.setProgress(nextProps.progress);
     }
   }
 
-  componentWillMount() {
-    console.log('componentWillMount');
-  }
 
-  componentDidMount() {
-    console.log('componentDidMount, value:' + this.state.value);
-  }
 
   /**
    * 把对外的value值转成界面对应的位置。
@@ -187,7 +174,6 @@ export default class SeekBar extends Component {
    * @param fromUser  是否是用户手动更新，自动刷新不通知监听器，以免事件死循环。
    */
   updatePosition(position, fromUser = false) {
-    console.log('updatePosition: ' + position);
     let newValue;
     if (position < this.progressLeft) {
       position = this.progressLeft;
@@ -218,7 +204,6 @@ export default class SeekBar extends Component {
   }
 
   onGrant(event) {
-    console.log('onGrant');
     let position = this.getPositionFromEvent(event);
     this.updatePosition(position, false);
     this.setState({
@@ -236,7 +221,6 @@ export default class SeekBar extends Component {
   }
 
   onPressEnd(event) {
-    console.log('onPressEnd');
     let position = this.getPositionFromEvent(event);
     this.updatePosition(position, true);
     this.setState({
