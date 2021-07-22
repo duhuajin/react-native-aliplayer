@@ -216,13 +216,13 @@ function ControlerView({
         )}
 
         <Text style={styles.textTitle}>{title}</Text>
-        {Boolean(hasBitrate && isFull) && (
+        {/* {Boolean(hasBitrate && isFull) && (
           <Text
             style={[styles.textQuality, styles.iconLeft]}
             onPress={() => setQualityVisible(true)}>
             {bitrateLabel}
           </Text>
-        )}
+        )} */}
       </AnimateView>
       <PressView
         style={styles.stateview}
