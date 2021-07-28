@@ -264,6 +264,8 @@ const Player = forwardRef(
           }}>
           <StatusBar hidden={isLandscape} />
           <ControlerView
+            onPressPlay={handlePlay}
+            onPressPause={handlePause}
             {...restProps}
             title={title}
             isFull={isOrientationLandscape}
@@ -282,8 +284,6 @@ const Player = forwardRef(
             bitrateList={bitrateList}
             bitrateIndex={bitrateIndex}
             onSlide={handleSlide}
-            onPressPlay={handlePlay}
-            onPressPause={handlePause}
             onPressReload={handleReload}
             onPressFullIn={handleFullScreenIn}
             onPressFullOut={handleFullScreenOut}
